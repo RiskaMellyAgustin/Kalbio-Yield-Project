@@ -1,0 +1,83 @@
+/* Style untuk halaman-halaman MSTD */
+
+.mstd-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Layout 2 kolom */
+    gap: 30px;
+    align-items: start;
+}
+
+.form-card, .table-card {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+}
+
+.form-card h2, .table-card h2 {
+    color: #537D5D; /* Warna hijau Kalbio */
+    margin-top: 0;
+    border-bottom: 2px solid #f0f2f5;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Styling untuk form */
+.form-card form p {
+    margin-bottom: 1rem;
+}
+.form-card form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+.form-card form input,
+.form-card form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.form-card button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    background-color: #537D5D;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.form-card button:hover {
+    background-color: #44694d;
+}
+
+/* Styling untuk tabel */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+.table th, .table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table a.btn {
+    text-decoration: none;
+}

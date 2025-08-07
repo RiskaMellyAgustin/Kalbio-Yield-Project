@@ -1,0 +1,25 @@
+{# yieldapp/uploads/upload_page.html #}
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Upload CSV Data Yield{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/mstd_pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Upload CSV Data Yield (Migrasi)</h1>
+    <a href="{% url 'mstd_dashboard' %}" class="btn btn-outline-secondary">← Kembali ke MSTD Dashboard</a>
+</div>
+
+<div class="form-card" style="max-width: 600px; margin: auto;">
+    <h2>Unggah File CSV Data Yield</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Upload Data Yield</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "yieldapp/mstd/mstd_base.html" %}
+{% load static %}
+
+{% block title %}MSTD Dashboard{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/mstd_dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mstd-hub-container">
+    <h1 class="display-5">MSTD Dashboard</h1>
+    <p class="lead text-muted">Selamat datang, {{ request.user.username }}. Pilih menu di bawah untuk melanjutkan.</p>
+
+    <div class="sub-nav my-4">
+        {% comment %} <a href="{% url 'issue_list' %}" class="btn btn-outline-danger">
+            <i class="bi bi-exclamation-triangle"></i> Lihat Laporan Isu
+        </a>
+        <a href="{% url 'notification_list' %}" class="btn btn-outline-info">
+            <i class="bi bi-bell"></i> Lihat Notifikasi
+        </a> {% endcomment %}
+        <a href="{% url 'upload_yield' %}" class="btn btn-primary-custom">
+            <i class="bi bi-file-earmark-arrow-up"></i> Upload Data Yield CSV (Migrasi)
+        </a>
+    </div>
+    <div class="card-grid">
+        <a href="{% url 'product_list' %}" class="card-link">
+            <div class="custom-card">
+                <div class="card-icon"><i class="bi bi-box-seam"></i></div>
+                <h2>Kelola Produk</h2>
+                <p>Tambah, edit, atau hapus data master produk dan standar target.</p>
+            </div>
+        </a>
+
+        <a href="{% url 'dashboard' %}" class="card-link">
+            <div class="custom-card">
+                <div class="card-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <h2>Dashboard Analisis</h2>
+                <p>Lihat semua Dashboard Terpusat, isu produksi dan isi rencana tindak lanjut.</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}

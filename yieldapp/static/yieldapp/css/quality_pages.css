@@ -1,0 +1,79 @@
+/* Style untuk Halaman-halaman Quality Control (QC) */
+
+/* Styling untuk tabel daftar batch */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table th, .table td {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.table th {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.table a.btn {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Styling untuk form update */
+.form-container {
+    max-width: 600px;
+    margin: auto;
+}
+
+.form-container h1 {
+    color: #537D5D; /* Warna hijau Kalbio */
+}
+
+.form-container form p {
+    margin-bottom: 1.5rem;
+}
+
+.form-container form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #6c757d;
+}
+
+.form-container form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem; /* Sudut lebih modern */
+    box-sizing: border-box;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.375rem;
+    background-color: #537D5D;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.form-container button:hover {
+    background-color: #44694d;
+}

@@ -1,0 +1,15 @@
+{% load static %}
+
+{# Kita tidak lagi butuh tag <html>, <head>, atau <body> #}
+{# Cukup konten form-nya saja #}
+
+<div class="issue-form-container">
+    <h2>Laporkan/Edit Isu</h2>
+    <p class="batch-info">Untuk Batch: <strong>{{ batch.batch_number }}</strong></p>
+
+    <form method="POST" action="{% url 'report_issue' batch.pk %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Simpan Laporan</button>
+    </form>
+</div>

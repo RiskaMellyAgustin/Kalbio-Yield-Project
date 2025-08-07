@@ -1,0 +1,33 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Edit Produk - {{ form.instance.name }}{% endblock %}
+
+{% block extra_head %}
+    {# Kita gunakan ulang CSS dari halaman MSTD lainnya #}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/mstd_pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Edit Produk</h1>
+    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">← Kembali ke Daftar Produk</a>
+</div>
+
+{# Kita bungkus form-nya dengan .form-card agar tampilannya konsisten #}
+<div class="form-card" style="max-width: 600px; margin: auto;">
+    <h2>Detail Produk: {{ form.instance.name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+            </p>
+        {% endfor %}
+        
+        <button type="submit">Update Produk</button>
+    </form>
+</div>
+{% endblock %}

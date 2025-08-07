@@ -1,0 +1,46 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Issue List{% endblock %}
+
+{% block content %}
+<h2>Issue List</h2>
+<hr>
+<div class="table-responsive">
+  <table class="table table-bordered text-center align-middle">
+    <thead class="table-light sticky-top">
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Updated At</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for issue in issues %}
+      <tr>
+        <td>{{ issue.title }}</td>
+        <td>{{ issue.description }}</td>
+        {% load tz %}
+        <td>
+        {% timezone "Asia/Jakarta" %}
+            {{ issue.updated_at|date:"F j, Y, H:i" }} WIB
+        {% endtimezone %}
+        </td>
+        <td>
+        {% if issue.is_resolved %}
+            <span class="badge bg-success">Resolved</span>
+        {% else %}
+            <span class="badge bg-warning text-dark">Open</span>
+        {% endif %}
+        </td>
+        <td>
+          <a class="btn btn-sm btn-primary" href="{% url 'update_action' issue.id %}">Fill Action Plan</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

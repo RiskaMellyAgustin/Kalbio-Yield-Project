@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Laporan Kinerja Produksi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* CSS untuk tampilan layar */
+        body { background-color: #f0f0f0; }
+        .report-container { background-color: white; max-width: 800px; margin: 2rem auto; padding: 2rem; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .print-button { position: fixed; top: 20px; right: 20px; }
+
+        /* CSS KHUSUS UNTUK PRINT */
+        @media print {
+            body { background-color: white; font-family: 'Times New Roman', serif; font-size: 11pt; }
+            .report-container { box-shadow: none; margin: 0; max-width: 100%; padding: 0; }
+            .no-print { display: none; } /* Sembunyikan semua elemen dengan kelas 'no-print' */
+            h3 { page-break-before: auto; } /* Hindari halaman baru untuk setiap judul jika tidak perlu */
+            .page-break { page-break-before: always; } /* Gunakan kelas ini jika ingin paksa pindah halaman */
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; } /* Ulangi header tabel di setiap halaman */
+            
+            @page {
+                size: A4;
+                margin: 2cm 1.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="text-center mb-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary">
+                🖨️ Cetak Laporan
+            </button>
+        </div>
+
+        <header class="text-center mb-5">
+            {# Ganti dengan path ke logo Anda jika ada #}
+            {# <img src="{% static 'images/logo.png' %}" alt="Logo" style="width: 150px;"> #}
+            <h1 class="mt-3">{{ report_title }}</h1>
+            <p class="lead">
+                Periode: {{ start_date|date:"d M Y" }} - {{ end_date|date:"d M Y" }}
+            </p>
+            <p class="text-muted" style="font-size: 0.9rem;">
+                Dicetak pada: {{ print_date|date:"d M Y, H:i" }} WIB
+            </p>
+        </header>
+        <hr>
+
+        <section class="mb-5">
+            <h3>Ringkasan Performa</h3>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="w-75">Total Batch Selesai</td>
+                        <td class="w-25 text-center"><strong>{{ total_completed }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Tingkat Keberhasilan</td>
+                        <td class="text-center"><strong>{{ achieved_rate }}%</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Total Isu Dilaporkan</td>
+                        <td class="text-center"><strong>{{ total_issues }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Isu Masih Terbuka</td>
+                        <td class="text-center"><strong>{{ open_issues_count }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="mb-5 page-break">
+            <h3>Detail Batch Tidak Mencapai Target</h3>
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Batch Number</th>
+                        <th>Produk</th>
+                        <th class="text-center">Final Yield (%)</th>
+                        <th class="text-center">Target (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in failed_batches %}
+                    <tr>
+                        <td>{{ data.batch.batch_number }}</td>
+                        <td>{{ data.batch.product.name }}</td>
+                        <td class="text-center">{{ data.calculated_yield_percentage|floatformat:2 }}%</td>
+                        <td class="text-center">{{ data.batch.product.target_yield_percent }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="text-center">Tidak ada batch yang gagal mencapai target pada periode ini.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="page-break">
+            <h3>Isu Baru Dilaporkan</h3>
+            <table class="table table-sm table-bordered">
+                 <thead>
+                    <tr>
+                        <th style="width: 10%;">Status</th>
+                        <th style="width: 20%;">Batch Number</th>
+                        <th>Deskripsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in recent_issues %}
+                    <tr>
+                        <td>{% if issue.is_resolved %}<span class="text-success">Resolved</span>{% else %}<span class="text-danger">Open</span>{% endif %}</td>
+                        <td>{{ issue.batch.batch_number }}</td>
+                        <td>{{ issue.description }}</td>
+                    </tr>
+                     {% empty %}
+                    <tr><td colspan="3" class="text-center">Tidak ada isu baru yang dilaporkan pada periode ini.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+    </div>
+</body>
+</html>

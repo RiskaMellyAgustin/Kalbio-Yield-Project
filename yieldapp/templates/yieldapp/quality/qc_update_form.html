@@ -1,0 +1,29 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Update PCT - {{ batch.batch_number }}{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/quality_pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="text-center">Update PCT untuk Batch</h1>
+    <p class="text-center text-muted">Produk: <strong>{{ batch.product.name }} ({{ batch.batch_number }})</strong></p>
+
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+            </p>
+        {% endfor %}
+        
+        <button type="submit">Simpan Data PCT</button>
+        <a href="{% url 'qc_dashboard' %}" class="btn btn-secondary w-100 mt-2">Batal</a>
+    </form>
+</div>
+{% endblock %}

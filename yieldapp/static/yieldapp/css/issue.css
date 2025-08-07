@@ -1,0 +1,57 @@
+/* CSS untuk Form Isu di dalam Modal */
+
+.issue-form-container h2 {
+    color: #537D5D; /* Warna hijau Kalbio */
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    text-align: center;
+}
+
+.issue-form-container p.batch-info {
+    text-align: center;
+    color: #6c757d; /* Teks abu-abu */
+    margin-top: -15px;
+    margin-bottom: 25px;
+}
+
+.issue-form-container form p { 
+    display: flex; 
+    flex-direction: column; 
+    margin-bottom: 1rem;
+}
+
+.issue-form-container form label { 
+    margin-bottom: 0.5rem; 
+    color: #6c757d; 
+    font-weight: 500; 
+}
+
+.issue-form-container form input, 
+.issue-form-container form textarea { 
+    background-color: #f8f9fa; /* Latar abu-abu muda */
+    color: #2c3e50; 
+    border: 1px solid #dee2e6; 
+    padding: 10px; 
+    border-radius: 5px; 
+    width: 100%; 
+    box-sizing: border-box; 
+}
+
+.issue-form-container form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.issue-form-container form button { 
+    width: 100%; 
+    padding: 12px; 
+    margin-top: 15px; 
+    background-color: #537D5D; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    cursor: pointer;
+    font-weight: bold;
+}

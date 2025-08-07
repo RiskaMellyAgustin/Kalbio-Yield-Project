@@ -1,0 +1,96 @@
+{% comment %} File ini berisi tabel isu DAN modal detail untuk setiap isu {% endcomment %}
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Status</th>
+                    <th>Batch Number</th>
+                    <th>Deskripsi Isu</th>
+                    <th>Action Plan (Singkat)</th>
+                    <th>Terakhir Update</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for issue in issues %}
+                <tr>
+                    <td>
+                        {% if issue.is_resolved %}
+                            <span class="badge bg-success">Resolved</span>
+                        {% else %}
+                            <span class="badge bg-danger">Open</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ issue.batch.batch_number }}</td>
+                    <td>{{ issue.description|truncatewords:10 }}</td>
+                    <td>{{ issue.action_taken|default:"-"|truncatewords:10 }}</td>
+                    <td>{{ issue.updated_at|timesince }} lalu</td>
+                    <td class="text-center">
+                        {# 1. TOMBOL INI DIUBAH UNTUK MEMICU MODAL #}
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#issueDetailModal-{{ issue.id }}">
+                            Lihat Detail
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center p-4">
+                        Tidak ada isu yang dilaporkan.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# 2. STRUKTUR MODAL DITEMPATKAN DI SINI, MASIH DI DALAM FILE YANG SAMA #}
+{% for issue in issues %}
+<div class="modal fade" id="issueDetailModal-{{ issue.id }}" tabindex="-1" aria-labelledby="issueDetailModalLabel-{{ issue.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="issueDetailModalLabel-{{ issue.id }}">Detail Isu: {{ issue.title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Batch Number</dt>
+                    <dd class="col-sm-9">{{ issue.batch.batch_number }}</dd>
+
+                    <dt class="col-sm-3">Status</dt>
+                    <dd class="col-sm-9">
+                        {% if issue.is_resolved %}
+                            <span class="badge bg-success">Resolved</span>
+                        {% else %}
+                            <span class="badge bg-danger">Open</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-3">Deskripsi Lengkap</dt>
+                    <dd class="col-sm-9">
+                        <p style="white-space: pre-wrap;">{{ issue.description }}</p>
+                    </dd>
+
+                    <dt class="col-sm-3">Action Plan</dt>
+                    <dd class="col-sm-9">
+                        <p style="white-space: pre-wrap;">{{ issue.action_taken|default:"Belum ada tindakan yang diambil." }}</p>
+                    </dd>
+
+                    <dt class="col-sm-3">Dilaporkan Pada</dt>
+                    <dd class="col-sm-9">{{ issue.created_at }}</dd>
+
+                    <dt class="col-sm-3">Terakhir Diperbarui</dt>
+                    <dd class="col-sm-9">{{ issue.updated_at }}</dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                {# Anda bisa menambahkan tombol lain di sini, misal untuk mengedit #}
+                {# <a href="#" class="btn btn-primary">Edit Action Plan</a> #}
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

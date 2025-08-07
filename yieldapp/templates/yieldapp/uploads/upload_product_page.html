@@ -1,0 +1,25 @@
+{# yieldapp/uploads/upload_product_page.html #}
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Upload CSV Master Produk{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/mstd_pages.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Upload CSV Master Produk</h1>
+    <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">← Kembali ke Daftar Produk</a>
+</div>
+
+<div class="form-card" style="max-width: 600px; margin: auto;">
+    <h2>Unggah File CSV Produk</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary w-100">Upload Produk</button>
+    </form>
+</div>
+{% endblock %}

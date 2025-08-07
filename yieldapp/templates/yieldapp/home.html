@@ -1,0 +1,42 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Selamat Datang di Kalbio Dashboard{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="hero-container">
+        <div class="hero-content">
+            {% if user.is_authenticated %}
+
+                <h1 class="reveal">Selamat Datang Kembali,<br><span class="brand-color">{{ user.username }}!</span></h1>
+                <p class="reveal">Akses dasbor Anda untuk melanjutkan pekerjaan dan memantau performa produksi.</p>
+                <div class="reveal">
+                    <a href="{% url 'redirect_hub' %}" class="btn-custom btn-primary-custom">Masuk ke Dashboard</a>
+                </div>
+
+            {% else %}
+
+                <h1 class="reveal">Monitoring Performa<br><span class="brand-color">Jadi Lebih Mudah.</span></h1>
+                <p class="reveal">Solusi terintegrasi untuk melacak Yield dan Plant Cycle Time secara real-time.</p>
+                <div class="reveal">
+                    <a href="{% url 'login' %}" class="btn-custom btn-primary-custom">Login untuk Memulai</a>
+                </div>
+
+            {% endif %}
+        </div>
+
+        <div class="hero-image">
+            <img src="{% static 'yieldapp/img/KalbioLogo.png' %}" alt="Dashboard Illustration">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script src="{% static 'yieldapp/js/home.js' %}"></script>
+{% endblock %}

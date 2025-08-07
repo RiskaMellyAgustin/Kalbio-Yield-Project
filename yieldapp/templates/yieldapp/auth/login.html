@@ -1,0 +1,40 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block extra_head %}
+    {# Ini adalah cara yang benar: menghubungkan ke file CSS eksternal #}
+    <link rel="stylesheet" href="{% static 'yieldapp/css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    
+    <img src="{% static 'yieldapp/img/KalbioLogo.png' %}" alt="Logo Kalbio" class="login-logo">
+
+    <h1>Selamat Datang</h1>
+    <p>Silakan login untuk melanjutkan</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <ul class="errorlist">
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="id_username">Username</label>
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            <label for="id_password">Password</label>
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn-login">Login</button>
+    </form>
+</div>
+{% endblock %}

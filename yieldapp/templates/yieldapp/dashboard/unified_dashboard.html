@@ -1,0 +1,381 @@
+{% extends "yieldapp/partials/base.html" %}
+{% load static %}
+{% load yieldapp_tags %}
+
+{% block title %}Dashboard Terpusat{% endblock %}
+
+{% block content %}
+<style>
+    /* Palet Warna & Desain Utama */
+    :root {
+        --primary-green: #537D5D;
+        --secondary-green: #73946B;
+        --light-green: #9EBC8A;
+        --pale-green: #D2D0A0;
+        --text-dark: #2c3e50;
+        --text-muted: #6c757d;
+        --danger-color: #dc3545;
+        --success-color: #198754;
+        --border-color: #dee2e6;
+    }
+    h1, h2 { color: var(--primary-green); }
+    .filter-bar { background-color: #fff; padding: 1rem 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .summary-card { border: none; border-left: 5px solid var(--primary-green); }
+    .summary-card .card-title { font-weight: 500; color: var(--text-muted); }
+    .summary-card .card-text { font-size: 2.5rem; font-weight: 700; color: var(--text-dark); }
+    .chart-container { height: 400px; }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Dashboard Analisis Terpusat</h1>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title" style="color: var(--primary-green);">Buat Laporan Cetak</h5>
+        <form action="{% url 'print_report' %}" method="GET" target="_blank" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="report_start_date" class="form-label fw-bold">Dari Tanggal</label>
+                <input type="date" class="form-control form-control-sm" id="report_start_date" name="start_date" required>
+            </div>
+            <div class="col-md-4">
+                <label for="report_end_date" class="form-label fw-bold">Sampai Tanggal</label>
+                <input type="date" class="form-control form-control-sm" id="report_end_date" name="end_date" required>
+            </div>
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-sm" style="background-color: var(--secondary-green); color: white;">
+                    🖨️ Buat & Cetak Laporan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="filter-bar mb-4">
+    <form method="GET" action="{% url 'dashboard' %}" class="row g-3 align-items-end">
+        <div class="col-md-2">
+            <label for="year-select" class="form-label fw-bold">Tahun</label>
+            <select name="year" id="year-select" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                {% for date in available_years %}
+                    <option value="{{ date.year }}" {% if selected_year|stringformat:"s" == date.year|stringformat:"s" %}selected{% endif %}>{{ date.year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label for="month-select" class="form-label fw-bold">Bulan</label>
+            <select name="month" id="month-select" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                {% for month_num, month_name in available_months %}
+                    <option value="{{ month_num }}" {% if selected_month|stringformat:"s" == month_num|stringformat:"s" %}selected{% endif %}>
+                        {{ month_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="product-select" class="form-label fw-bold">Produk</label>
+            <select name="product" id="product-select" class="form-select form-select-sm">
+                <option value="">Semua</option>
+                {% for p in available_products %}
+                    <option value="{{ p.pk }}" {% if selected_product|stringformat:"s" == p.pk|stringformat:"s" %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label for="start-date-filter" class="form-label fw-bold">Dari Tanggal</label>
+            <input type="date" name="start_date" class="form-control form-control-sm" id="start-date-filter" value="{{ start_date_filter|default:'' }}">
+        </div>
+        <div class="col-md-2">
+            <label for="end-date-filter" class="form-label fw-bold">Sampai Tanggal</label>
+            <input type="date" name="end_date" class="form-control form-control-sm" id="end-date-filter" value="{{ end_date_filter|default:'' }}">
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-sm" style="background-color: #537D5D; color: white;">Terapkan</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+</div>
+
+<h2>Ringkasan (Hasil Filter)</h2>
+<div class="row g-4 my-4">
+    <div class="col-md-4"><div class="card shadow-sm summary-card h-100"><div class="card-body"><h5 class="card-title">Total Batch Selesai</h5><p class="card-text">{{ total_completed_batches }}</p></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm summary-card h-100"><div class="card-body"><h5 class="card-title">Tingkat Keberhasilan</h5><p class="card-text">{{ achieved_rate }}%</p></div></div></div>
+    <div class="col-md-4"><div class="card shadow-sm summary-card h-100"><div class="card-body"><h5 class="card-title">Total Isu Dilaporkan</h5><p class="card-text">{{ total_issues }}</p></div></div></div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4"><div class="card shadow-sm"><div class="card-body"><h5 class="card-title text-center">Status Target Batch</h5><div class="chart-container"><canvas id="donutChart"></canvas></div></div></div></div>
+    <div class="col-lg-8"><div class="card shadow-sm"><div class="card-body"><h5 class="card-title text-center">Rata-rata Yield per Produk</h5><div class="chart-container"><canvas id="barChart"></canvas></div></div></div></div>
+</div>
+
+<h2 class="mt-5">Tabel Detail Data</h2>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Batch Number</th>
+                    <th>Produk</th>
+                    <th>Final Yield (%)</th>
+                    <th>Target (%)</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in page_obj %}
+                <tr>
+                    <td>{{ data.batch.batch_number }}</td>
+                    <td>{{ data.batch.product.name }}</td>
+                    <td><strong>{{ data.final_yield_percentage }}%</strong></td>
+                    <td>{{ data.target_yield }}%</td>
+                    <td>
+                        {% if data.is_achieved %}
+                            <span class="badge bg-success">Tercapai</span>
+                        {% else %}
+                            <span class="badge bg-danger">Tidak Tercapai</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="?{{ request.GET.urlencode }}&batch_detail={{ data.pk }}" class="btn btn-sm btn-outline-primary">
+                            Lihat Detail Grafik
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center p-5">Tidak ada data yang cocok dengan filter Anda.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-light border-0">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}&amp;{{ request.GET.urlencode | cut:'page=' }}">&laquo; Sebelumnya</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">&laquo; Sebelumnya</span>
+                    </li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                         <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}&amp;{{ request.GET.urlencode | cut:'page=' }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}&amp;{{ request.GET.urlencode | cut:'page=' }}">Berikutnya &raquo;</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Berikutnya &raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div> 
+
+<h2 class="mt-5">Daftar Isu Terkait (Hasil Filter)</h2>
+{% render_issue_table %}
+
+<h2 class="mt-5">Batch Sedang Berjalan (Work In Progress)</h2>
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>Batch Number</th>
+                    <th>Produk</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Status Terakhir</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for batch in wip_batches %}
+                <tr>
+                    <td>{{ batch.batch_number }}</td>
+                    <td>{{ batch.product.name }}</td>
+                    <td>{{ batch.start_date|date:"d M Y" }}</td>
+                    <td><span class="badge bg-warning text-dark">{{ batch.get_status_display }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center p-4">Tidak ada batch yang sedang berjalan.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<h2 class="mt-5">Ringkasan (Batch Selesai)</h2>
+{% if selected_batch_data %}
+<hr class="my-5">
+<h2>Detail Batch: {{ selected_batch_data.batch.batch_number }}</h2>
+<div class="row g-4">
+    <div class="col-lg-8"><div class="card shadow-sm"><div class="card-body"><h5 class="card-title text-center">Waterfall Chart - Aliran Loss (pcs)</h5><div class="chart-container"><canvas id="waterfallChart"></canvas></div></div></div></div>
+    <div class="col-lg-4"><div class="card shadow-sm"><div class="card-body"><h5 class="card-title text-center">Final Yield vs Target (%)</h5><div class="chart-container"><canvas id="barDetailChart"></canvas></div></div></div></div>
+</div>
+<div class="card shadow-sm mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Yield Loss Table</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Proses</th>
+                    <th>Output (pcs)</th>
+                    <th>Loss (pcs)</th>
+                    <th>Sampel QC (pcs)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Formulasi</strong></td>
+                    <td>{{ selected_batch_data.formulation_output_pcs|default:0 }}</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Filling</strong></td>
+                    <td>{{ selected_batch_data.filling_output|default:0 }}</td>
+                    <td>{{ selected_batch_data.loss_filling }}</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Inspeksi</strong></td>
+                    <td>{{ selected_batch_data.total_after_inspection|default:0 }}</td>
+                    <td>{{ selected_batch_data.loss_inspection }}</td>
+                    <td>{{ selected_batch_data.qc_sample|default:0 }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Assembly</strong></td>
+                    <td>{{ selected_batch_data.assembly_output|default:0 }}</td>
+                    <td>{{ selected_batch_data.loss_assembly }}</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Blistering</strong></td>
+                    <td>{{ selected_batch_data.blistering_output|default:0 }}</td>
+                    <td>{{ selected_batch_data.loss_blistering }}</td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td><strong>Packaging</strong></td>
+                    <td>{{ selected_batch_data.packaging_output|default:0 }}</td>
+                    <td>{{ selected_batch_data.loss_packaging }}</td>
+                    <td>-</td>
+                </tr>
+                <tr class="table-success">
+                    <td><strong>Handover (Final Yield)</strong></td>
+                    <td><strong>{{ selected_batch_data.handover_output|default:0 }}</strong></td>
+                    <td>{{ selected_batch_data.loss_handover }}</td>
+                    <td>-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-waterfall@latest/dist/chartjs-plugin-waterfall.min.js"></script>
+<script>
+    // Data Umum
+    const donutData = {{ donut_chart_data|safe }};
+    const barData = {{ bar_chart_data|safe }};
+    
+    // Render Chart Umum
+    const donutCtx = document.getElementById('donutChart');
+    if (donutCtx) {
+        new Chart(donutCtx, { 
+            type: 'doughnut', 
+            data: { labels: donutData.labels, datasets: [{ data: donutData.data, backgroundColor: ['#73946B', '#dc3545'] }] } 
+        });
+    }
+
+    const barCtx = document.getElementById('barChart');
+    if (barCtx) {
+        new Chart(barCtx, { 
+            type: 'bar', 
+            data: { 
+                labels: barData.labels, 
+                datasets: [{ 
+                    label: 'Rata-rata Yield (%)', 
+                    data: barData.data, 
+                    backgroundColor: '#537D5D' 
+                }] 
+            }, 
+            options: { 
+                scales: { 
+                    y: {
+                        beginAtZero: true, 
+                        max: 100,
+                        title: { display: true, text: 'Rata-rata Yield (%)' } 
+                    },
+                    x: {
+                        title: { display: true, text: 'Produk' } 
+                    }
+                },
+                plugins: { 
+                    legend: { display: false } 
+                } 
+            } 
+        });
+    }
+</script>
+{% if selected_batch_data %}
+<script>
+    // Data Detail
+    const waterfallLabels = {{ waterfall_labels|safe }};
+    const waterfallData = {{ waterfall_data|safe }};
+    
+    // Render Waterfall Chart
+    const waterfallCtx = document.getElementById('waterfallChart');
+    if (waterfallCtx) {
+        new Chart(waterfallCtx, { 
+            type: 'bar', 
+            data: { labels: waterfallLabels, datasets: [{ label: 'Yield Flow (pcs)', data: waterfallData, backgroundColor: ['#537D5D', '#dc3545', '#dc3545', '#dc3545', '#dc3545', '#dc3545', '#dc3545'], waterfall: { calculating: true } }] }, 
+            options: { 
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { title: { display: true, text: 'Proses Produksi' } },
+                    y: { beginAtZero: true, title: { display: true, text: 'Jumlah (pcs)' } }
+                }
+            } 
+        });
+    }
+    
+    // Render Bar Chart Detail
+    const barDetailCtx = document.getElementById('barDetailChart');
+    if (barDetailCtx) {
+        new Chart(barDetailCtx, { 
+            type: 'bar', 
+            data: { labels: ['Yield Performance'], datasets: [ { label: 'Actual Yield (%)', data: [{{ selected_batch_data.final_yield_percentage }}], backgroundColor: '#9EBC8A' }, { label: 'Target Yield (%)', data: [{{ selected_batch_data.target_yield }}], backgroundColor: '#D2D0A0' } ] }, 
+            options: { 
+                scales: { 
+                    y: { beginAtZero: true, max: 110, title: { display: true, text: 'Persentase (%)' } } 
+                } 
+            } 
+        });
+    }
+</script>
+{% endif %}
+{% endblock %}

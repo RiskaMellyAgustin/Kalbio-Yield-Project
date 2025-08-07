@@ -1,0 +1,6 @@
+<h2>{{ proses }}</h2>
+<form method="POST" action="{{ request.path }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Simpan & Lanjutkan</button>
+</form>

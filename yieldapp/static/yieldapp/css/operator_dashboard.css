@@ -1,0 +1,106 @@
+/* Palet Warna Terang (Light Mode) dengan Aksen Hijau */
+:root {
+    --primary-green: #537D5D;
+    --secondary-green: #73946B;
+    --background-light: #f8f9fa;
+    --card-light: #ffffff;
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --border-color: #dee2e6;
+    --status-completed: #198754;
+    --status-active: #0d6efd;
+    --status-locked: #adb5bd;
+}
+
+body { 
+    background-color: var(--background-light); 
+    color: var(--text-dark); 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+    margin: 0; 
+    display: flex; 
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* --- SIDEBAR --- */
+.sidebar { 
+    width: 300px; 
+    background-color: var(--card-light); 
+    height: 100%; 
+    padding: 20px; 
+    box-sizing: border-box; 
+    border-right: 1px solid var(--border-color); 
+    display: flex; flex-direction: column; flex-shrink: 0;
+}
+.sidebar h2 { 
+    color: var(--primary-green); border-bottom: 2px solid var(--primary-green); 
+    padding-bottom: 10px; margin-top: 0; font-size: 1.5rem;
+}
+.sidebar ul { list-style-type: none; padding: 0; margin: 0; flex-grow: 1; overflow-y: auto; }
+.sidebar li a { 
+    display: block; color: var(--text-dark); text-decoration: none; 
+    padding: 15px; border-radius: 8px; margin-bottom: 10px; 
+    background-color: #e9ecef; transition: all 0.2s ease-in-out; font-weight: 500;
+}
+.sidebar li a:hover, .sidebar li a.active { 
+    background-color: var(--primary-green); color: white; font-weight: bold; 
+    transform: translateX(5px); box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.sidebar .new-batch-btn { 
+    text-decoration:none; color: white; background-color: var(--secondary-green); 
+    padding: 15px; display: block; text-align: center; border-radius: 8px; 
+    font-weight: bold; margin-top: 20px; transition: background-color 0.2s;
+}
+.sidebar .new-batch-btn:hover { background-color: var(--primary-green); }
+
+/* --- KONTEN UTAMA --- */
+.main-content { flex-grow: 1; padding: 40px; overflow-y: auto; height: 100%; box-sizing: border-box; }
+.main-content h1 { font-weight: 700; color: var(--text-dark); }
+.process-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+.process-card { background-color: var(--card-light); border-radius: 12px; padding: 20px; text-align: center; border-top: 5px solid; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+.process-card h3 { margin-top: 0; color: var(--text-dark); font-size: 1.1rem; font-weight: 600; }
+.process-card p { font-size: 2rem; font-weight: bold; color: var(--green-dark); margin: 10px 0; }
+.process-card .status { padding: 5px 15px; border-radius: 50px; font-size: 0.8em; font-weight: bold; color: white; display: inline-block; margin-top: 15px; }
+.process-card.completed { border-color: var(--status-completed); }
+.process-card.completed .status { background-color: var(--status-completed); }
+.process-card.active { border-color: var(--status-active); cursor: pointer; transform: translateY(-5px); box-shadow: 0 8px 20px rgba(13, 110, 253, 0.15); }
+.process-card.active:hover { box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25); }
+.process-card.active .status { background-color: var(--status-active); }
+.process-card.locked { border-color: var(--status-locked); opacity: 0.7; }
+.process-card.locked .status { background-color: var(--status-locked); }
+
+/* --- MODAL (POP-UP FORM) --- */
+.modal { 
+    display: none; /* Awalnya disembunyikan */
+    position: fixed; z-index: 1000; left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+}
+
+/* KELAS BARU UNTUK MENAMPILKAN MODAL DI TENGAH */
+.modal.is-visible {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content { 
+    background-color: var(--card-light); 
+    padding: 30px; border-radius: 10px; width: 90%; max-width: 500px; 
+    color: var(--text-dark); box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.close-button { color: #aaa; position: absolute; top: 10px; right: 25px; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close-button:hover { color: black; }
+.modal-content h2 { color: var(--primary-green); margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; }
+.modal-content form p { display: flex; flex-direction: column; }
+.modal-content form label { margin-bottom: 5px; color: var(--text-muted); font-weight: 500; }
+.modal-content form input, .modal-content form select, .modal-content form textarea { 
+    background-color: var(--background-light); color: var(--text-dark); 
+    border: 1px solid var(--border-color); padding: 10px; border-radius: 5px; 
+    margin-bottom: 10px; width: 100%; box-sizing: border-box; 
+}
+.modal-content form button { 
+    width: 100%; padding: 12px; margin-top: 15px; 
+    background-color: var(--primary-green); color: white; border: none; 
+    border-radius: 5px; font-size: 16px; cursor: pointer; 
+}

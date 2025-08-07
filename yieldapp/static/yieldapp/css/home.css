@@ -1,0 +1,108 @@
+/* CSS untuk Halaman Home (Desain Dua Kolom) */
+.hero-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 85vh;
+    padding: 2rem;
+    width: 100%;
+}
+
+.hero-content {
+    max-width: 50%;
+    padding-right: 3rem;
+    text-align: left; /* Teks rata kiri */
+}
+
+.hero-content h1 {
+    font-size: 3.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #2c3e50;
+}
+
+.hero-content .brand-color {
+    color: #537D5D; /* Warna hijau Kalbio */
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 1.5rem 0;
+}
+
+.btn-custom {
+    padding: 0.8rem 2.5rem;
+    font-size: 1.1rem;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-custom {
+    background-color: #537D5D;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: #44694d;
+    transform: translateY(-2px);
+}
+
+.hero-image {
+    max-width: 50%;
+}
+
+.hero-image img {
+    width: 100%;
+    max-width: 850px;
+    height: auto;
+    margin-left: 3rem;
+}
+
+
+/* === BAGIAN RESPONSIVE UNTUK LAYAR KECIL (HP/TABLET) === */
+@media (max-width: 992px) {
+    .hero-container {
+        flex-direction: column-reverse; /* Gambar di atas, teks di bawah */
+        text-align: center; /* Semua jadi rata tengah */
+        min-height: auto;
+    }
+
+    .hero-content {
+        max-width: 100%; /* Lebar penuh */
+        padding-right: 0;
+        text-align: center; /* Teks jadi rata tengah */
+        margin-top: 2rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem; /* Ukuran font dikecilkan */
+    }
+
+    .hero-image {
+        max-width: 80%; /* Lebar gambar disesuaikan */
+        margin-top: 2rem;
+    }
+
+    .hero-image img {
+        margin-left: 0; /* Hapus margin kiri */
+    }
+}
+
+
+/* === KODE BARU UNTUK ANIMASI === */
+
+/* Kondisi awal sebelum animasi: elemen disembunyikan dan sedikit ke bawah */
+.hero-content .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+/* Kondisi akhir setelah animasi: elemen muncul di posisi normal */
+.hero-content .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}

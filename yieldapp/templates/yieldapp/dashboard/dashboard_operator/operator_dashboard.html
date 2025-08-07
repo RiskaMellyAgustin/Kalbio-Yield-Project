@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Dashboard</title>
+    <link rel="stylesheet" href="{% static 'yieldapp/css/operator_dashboard.css' %}">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Batch Berjalan</h2>
+        <ul>
+            {% for batch in wip_batches %}
+                <li>
+                    <a href="{% url 'batch_process_view' batch.pk %}" class="{% if selected_batch.pk == batch.pk %}active{% endif %}">
+                        {{ batch.batch_number }} <br>
+                        <small style="color: #bdc3c7;">{{ batch.product.name }}</small>
+                    </a>
+                </li>
+            {% empty %}
+                <li><p style="padding: 15px;">Tidak ada batch yang sedang berjalan.</p></li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'input_filling' %}" class="new-batch-btn">+ Mulai Batch Baru</a>
+        <a href="{% url 'home' %}" class="new-batch-btn">← Kembali ke Home</a>
+    </div>
+
+    <div class="main-content">
+        {% if selected_batch %}
+            <h1>Proses untuk Batch: {{ selected_batch.batch_number }}</h1>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <p style="color: var(--text-muted); margin: 0;">
+                    Produk: {{ selected_batch.product.name }} | Status Saat Ini: <strong>{{ selected_batch.get_status_display }}</strong>
+                </p>
+                
+                <a href="#" data-url="{% url 'report_issue' selected_batch.pk %}"
+   style="padding:8px 15px; background:#c0392b; color:white; border-radius:5px; text-decoration:none; font-size: 0.9em;">
+   📝 Laporkan/Edit Isu
+</a>
+            </div>
+            
+            <div class="process-grid">
+                {% with yd=yield_data %}
+                    {# Card 1: Formulation & Filling #}
+                    <div class="process-card {% if yd.filling_output is not None %}completed{% else %}locked{% endif %}">
+                        <h3>Formulasi & Filling</h3>
+                        <p>{{ yd.filling_output|default:"-" }} pcs</p>
+                        <span class="status">{% if yd.filling_output is not None %}Selesai{% else %}Terkunci{% endif %}</span>
+                    </div>
+
+                    {# Card 2: Inspection #}
+                    <div data-url="{% if yd.filling_output is not None and yd.inspection_output is None %}{% url 'input_inspection' yd.pk %}{% endif %}"
+                         class="process-card {% if yd.inspection_output is not None %}completed{% elif yd.filling_output is not None %}active{% else %}locked{% endif %}">
+                        <h3>Inspeksi</h3>
+                        <p>{{ yd.inspection_output|default:"-" }} pcs</p>
+                        <span class="status">
+                            {% if yd.inspection_output is not None %}Selesai
+                            {% elif yd.filling_output is not None %}Klik untuk Input
+                            {% else %}Terkunci
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    {# Lanjutkan pola yang sama untuk card lainnya... #}
+                    {# Card 3: Assembly #}
+                    <div data-url="{% if yd.inspection_output is not None and yd.assembly_output is None %}{% url 'input_assembly' yd.pk %}{% endif %}" 
+                         class="process-card {% if yd.assembly_output is not None %}completed{% elif yd.inspection_output is not None %}active{% else %}locked{% endif %}">
+                        <h3>Assembly</h3>
+                        <p>{{ yd.assembly_output|default:"-" }} pcs</p>
+                        <span class="status">
+                             {% if yd.assembly_output is not None %}Selesai
+                            {% elif yd.inspection_output is not None %}Klik untuk Input
+                            {% else %}Terkunci
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    {# Card 4: Blistering #}
+                    <div data-url="{% if yd.assembly_output is not None and yd.blistering_output is None %}{% url 'input_blistering' yd.pk %}{% endif %}"
+                         class="process-card {% if yd.blistering_output is not None %}completed{% elif yd.assembly_output is not None %}active{% else %}locked{% endif %}">
+                        <h3>Blistering</h3>
+                        <p>{{ yd.blistering_output|default:"-" }} pcs</p>
+                        <span class="status">
+                            {% if yd.blistering_output is not None %}Selesai
+                            {% elif yd.assembly_output is not None %}Klik untuk Input
+                            {% else %}Terkunci
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    {# Card 5: Packaging #}
+                    <div data-url="{% if yd.blistering_output is not None and yd.packaging_output is None %}{% url 'input_packaging' yd.pk %}{% endif %}"
+                         class="process-card {% if yd.packaging_output is not None %}completed{% elif yd.blistering_output is not None %}active{% else %}locked{% endif %}">
+                        <h3>Packaging</h3>
+                        <p>{{ yd.packaging_output|default:"-" }} pcs</p>
+                        <span class="status">
+                            {% if yd.packaging_output is not None %}Selesai
+                            {% elif yd.blistering_output is not None %}Klik untuk Input
+                            {% else %}Terkunci
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    {# Card 6: Handover #}
+                    <div data-url="{% if yd.packaging_output is not None and yd.handover_output is None %}{% url 'input_handover' yd.pk %}{% endif %}"
+                         class="process-card {% if yd.handover_output is not None %}completed{% elif yd.packaging_output is not None %}active{% else %}locked{% endif %}">
+                        <h3>Handover</h3>
+                        <p>{{ yd.handover_output|default:"-" }} pcs</p>
+                        <span class="status">
+                            {% if yd.handover_output is not None %}Selesai
+                            {% elif yd.packaging_output is not None %}Klik untuk Input
+                            {% else %}Terkunci
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endwith %}
+            </div>
+        {% else %}
+            <h1>Selamat Datang, Operator!</h1>
+            <p>Silakan pilih batch yang sedang berjalan di sidebar kiri, atau klik "Mulai Batch Baru" untuk memulai.</p>
+        {% endif %}
+    </div>
+
+    <div id="formModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+    
+    <script src="{% static 'yieldapp/js/operator_dashboard.js' %}"></script>
+</body>
+</html>

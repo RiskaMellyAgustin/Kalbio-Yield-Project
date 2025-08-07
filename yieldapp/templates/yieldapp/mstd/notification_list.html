@@ -1,0 +1,26 @@
+{% extends "yieldapp/mstd/mstd_base.html" %}
+{% load static %}
+
+{% block title %}
+    Papan Notifikasi
+{% endblock %}
+
+{% block content %}
+    <h2>Papan Notifikasi MSTD</h2>
+    <hr>
+    <div class="list-group">
+        {% for notif in notifications %}
+            {# Tambahkan kelas 'list-group-item-light' jika notifikasi belum dibaca untuk membedakannya #}
+            <a href="{{ notif.link | default:'#' }}" class="list-group-item list-group-item-action {% if not notif.is_read %}list-group-item-light fw-bold{% endif %}">
+                <div class="d-flex w-100 justify-content-between">
+                    <p class="mb-1">{{ notif.message }}</p>
+                    <small class="text-muted">{{ notif.timestamp|timesince }} yang lalu</small>
+                </div>
+            </a>
+        {% empty %}
+            <div class="alert alert-info" role="alert">
+                Belum ada notifikasi baru.
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

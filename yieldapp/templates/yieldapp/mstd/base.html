@@ -1,0 +1,16 @@
+{% block content %}
+  <h2>Daftar Notifikasi</h2>
+  <div class="list-group">
+    {% for notif in notifications %}
+      <a href="{{ notif.link | default:'#' }}" 
+         class="list-group-item list-group-item-action {% if not notif.is_read %}list-group-item-info{% endif %}">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ notif.message }}</h5>
+          <small>{{ notif.timestamp|timesince }} yang lalu</small>
+        </div>
+      </a>
+    {% empty %}
+      <p>Tidak ada notifikasi baru.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
