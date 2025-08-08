@@ -23,8 +23,8 @@ Setiap orang memiliki branch masing-masing:
 ## Cara Mulai
 ### 1. Clone Repositori
 ```bash
-git clone https://github.com/RiskaMellyAgustin/Kalbio_Dashboard_Project
-cd Kalbio_Dashboard_Project
+git clone https://github.com/RiskaMellyAgustin/Kalbio-Yield-Project
+cd backend
 ```
 
 ### 2. Checkout ke Branch Kalian
